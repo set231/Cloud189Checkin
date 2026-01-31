@@ -20,11 +20,11 @@ jobs:
           UPSTREAM_BRANCH: main
           TARGET_BRANCH: main
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/$UPSTREAM_REPO.git
-          git fetch upstream
-          git checkout $TARGET_BRANCH
-          # 尝试合并，如果冲突则终止并报告失败
-          git merge upstream/$UPSTREAM_BRANCH || exit 1
-          git push origin $TARGET_BRANCH
+  git config user.name "github-actions[bot]"
+  git config user.email "github-actions[bot]@users.noreply.github.com"
+  git remote add upstream https://github.com/$UPSTREAM_REPO.git
+  git fetch upstream
+  git checkout $TARGET_BRANCH
+  # 关键修改：添加 --allow-unrelated-histories 参数
+  git merge upstream/$UPSTREAM_BRANCH --allow-unrelated-histories || exit 1
+  git push origin $TARGET_BRANCH
