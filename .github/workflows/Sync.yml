@@ -1,0 +1,30 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # 每6小时自动运行一次
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync from upstream
+        env:
+          UPSTREAM_REPO: wes-lin/Cloud189Checkin
+          UPSTREAM_BRANCH: main
+          TARGET_BRANCH: main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/$UPSTREAM_REPO.git
+          git fetch upstream
+          git checkout $TARGET_BRANCH
+          # 尝试合并，如果冲突则终止并报告失败
+          git merge upstream/$UPSTREAM_BRANCH || exit 1
+          git push origin $TARGET_BRANCH
